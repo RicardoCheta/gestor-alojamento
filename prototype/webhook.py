@@ -57,7 +57,16 @@ def verify_twilio_signature():
         return None
     validator = RequestValidator(TWILIO_AUTH_TOKEN)
     signature = request.headers.get("X-Twilio-Signature", "")
-    if not validator.validate(request.url, request.form, signature):
+    # Behind Render's proxy + the /hooks mount, request.url is the public https
+    # URL. Also try an override so a mismatch is easy to fix without redeploy.
+    candidates = [request.url]
+    override = os.environ.get("TWILIO_WEBHOOK_URL", "").strip()
+    if override:
+        candidates.insert(0, override)
+    if not any(validator.validate(u, request.form, signature) for u in candidates):
+        app.logger.warning("Assinatura Twilio inválida. URL usado: %s "
+                           "(define TWILIO_WEBHOOK_URL se o teu endpoint diferir)",
+                           request.url)
         abort(403)
     return None
 

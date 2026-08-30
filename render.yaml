@@ -1,5 +1,10 @@
-# Render blueprint — serviço web + base de dados Postgres + cron das mensagens
-# proativas. Este ficheiro TEM de estar na raiz do repositório.
+# Render blueprint — serviço web + base de dados Postgres.
+# Este ficheiro TEM de estar na raiz do repositório.
+#
+# O scheduler das mensagens proativas corre dentro do serviço web
+# (RUN_SCHEDULER=1, com 1 worker para não duplicar). Quando o tráfego crescer,
+# passa-o para um serviço "worker" ou "cron" dedicado (planos pagos) e tira o
+# RUN_SCHEDULER.
 #
 # Depois do primeiro deploy, define os segredos no painel do Render
 # (ver docs/deploy.md): APP_BASE_URL, SMTP_*, TWILIO_*, e (opcional) STRIPE_*.
@@ -17,7 +22,7 @@ services:
     region: frankfurt
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn wsgi:app --workers 2 --timeout 60 --bind 0.0.0.0:$PORT
+    startCommand: gunicorn wsgi:app --workers 1 --timeout 60 --bind 0.0.0.0:$PORT
     healthCheckPath: /login
     envVars:
       - key: DATABASE_URL
@@ -28,6 +33,8 @@ services:
         value: "3.12"
       - key: FLASK_SECRET_KEY
         generateValue: true
+      - key: RUN_SCHEDULER
+        value: "1"
       - key: APP_BASE_URL
         sync: false        # https://<nome-do-servico>.onrender.com
       - key: TWILIO_ACCOUNT_SID
@@ -55,25 +62,4 @@ services:
       - key: STRIPE_PRICE_INTERMEDIO
         sync: false
       - key: STRIPE_PRICE_PRO
-        sync: false
-
-  - type: cron
-    name: gestor-alojamento-scheduler
-    runtime: python
-    rootDir: prototype
-    region: frankfurt
-    plan: free
-    schedule: "*/15 * * * *"
-    buildCommand: pip install -r requirements.txt
-    startCommand: python scheduler.py
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: gestor-alojamento-db
-          property: connectionString
-      - key: TWILIO_ACCOUNT_SID
-        sync: false
-      - key: TWILIO_AUTH_TOKEN
-        sync: false
-      - key: TWILIO_WHATSAPP_FROM
         sync: false

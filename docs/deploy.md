@@ -55,9 +55,17 @@ python create_admin.py o-teu-email@exemplo.com 'a-tua-password'
 
 ## 5. Mensagens proativas
 
-O cron `gestor-alojamento-scheduler` corre `python scheduler.py` a cada 15 min
-e envia as instruções de check-in / lembretes de check-out devidos. Não é
-preciso `RUN_SCHEDULER` no serviço web.
+No plano gratuito, o scheduler corre **dentro do serviço web** (`RUN_SCHEDULER=1`
++ `--workers 1` no blueprint) — de 10 em 10 min verifica os check-ins de hoje e
+os check-outs de amanhã.
+
+Limitação do free tier: o serviço **adormece após 15 min sem tráfego** e o
+scheduler pára enquanto dorme; ao primeiro pedido acorda e recupera o atraso
+(check-in/out têm folga suficiente para isto não ser problema num piloto).
+
+Para produção a sério: sobe o web para **Starter** (sempre ligado) ou cria um
+serviço `worker`/`cron` dedicado a correr `python scheduler.py` e tira o
+`RUN_SCHEDULER` do web (com >1 worker, o scheduler no web duplicaria envios).
 
 ## 6. Stripe (subscrições)
 

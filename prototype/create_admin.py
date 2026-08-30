@@ -51,7 +51,9 @@ def main() -> None:
         db.create_host(email, generate_password_hash(password), name="Admin",
                        role="admin", email_verified=True)
         print(f"Conta de admin {email} criada.")
-    print("Entre em http://localhost:5051/login")
+    import os
+    base = os.environ.get("APP_BASE_URL", "http://localhost:5051").rstrip("/")
+    print(f"Entre em {base}/login")
 
 
 if __name__ == "__main__":

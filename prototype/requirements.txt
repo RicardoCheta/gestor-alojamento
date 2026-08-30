@@ -1,7 +1,10 @@
 flask>=3.0
-werkzeug>=3.0        # ships with flask; password hashing + ProxyFix + dispatcher
+werkzeug>=3.0
 twilio>=9.0
-gunicorn>=21.2       # production WSGI server
-psycopg[binary]>=3.1  ; only used when DATABASE_URL points at Postgres
-stripe>=7           ; only used when STRIPE_SECRET_KEY is set
-anthropic>=0.40      ; only needed if USE_LLM=1
+gunicorn>=21.2
+# psycopg: só usado quando DATABASE_URL aponta para Postgres
+psycopg[binary]>=3.1
+# stripe: só usado quando STRIPE_SECRET_KEY está definido
+stripe>=7
+# anthropic: só usado com USE_LLM=1
+anthropic>=0.40

@@ -47,11 +47,14 @@ qualquer pedido que não venha assinado pelo Twilio.
 
 ## 4. Criar a tua conta de admin
 
-Uma vez, a partir da shell do serviço web no Render:
+**Com shell** (planos pagos): `python create_admin.py o-teu-email 'password'`.
 
-```bash
-python create_admin.py o-teu-email@exemplo.com 'a-tua-password'
+**Sem shell** (free tier): no serviço web → Environment, adiciona
 ```
+BOOTSTRAP_ADMIN = o-teu-email@exemplo.com:uma-password-de-8+-caracteres
+```
+Save → no arranque seguinte a conta de admin é criada (só se ainda não existir
+nenhuma). Entra em `/login`, confirma, e **remove a variável `BOOTSTRAP_ADMIN`**.
 
 ## 5. Mensagens proativas
 

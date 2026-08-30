@@ -42,6 +42,39 @@ app.config.update(
 
 db.init_db()
 
+
+def _bootstrap_admin() -> None:
+    """Cria uma conta de admin a partir de BOOTSTRAP_ADMIN=email:password.
+
+    Corre no arranque; só cria se ainda não existir nenhum admin. Serve para
+    plataformas sem shell (Render free). Depois de entrar, remove a variável.
+    """
+    raw = os.environ.get("BOOTSTRAP_ADMIN", "")
+    if not raw or ":" not in raw:
+        return
+    from werkzeug.security import generate_password_hash
+    email, pw = raw.split(":", 1)
+    email, pw = email.strip(), pw.strip()
+    with db.connect() as conn:
+        has_admin = conn.execute(
+            "SELECT 1 FROM hosts WHERE role = 'admin' LIMIT 1").fetchone()
+    if has_admin or not email or len(pw) < 8:
+        return
+    existing = db.get_host_by_email(email)
+    if existing:
+        db.set_password(existing["id"], generate_password_hash(pw))
+        with db.connect() as conn:
+            conn.execute("UPDATE hosts SET role='admin', status='active', "
+                         "email_verified=1 WHERE id = ?", (existing["id"],))
+        print(f"[bootstrap] {email} promovido a admin", flush=True)
+    else:
+        db.create_host(email, generate_password_hash(pw), "Admin",
+                       role="admin", email_verified=True)
+        print(f"[bootstrap] conta de admin {email} criada", flush=True)
+
+
+_bootstrap_admin()
+
 _scheduler_started = False
 
 

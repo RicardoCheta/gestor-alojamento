@@ -56,6 +56,10 @@ BOOTSTRAP_ADMIN = o-teu-email@exemplo.com:uma-password-de-8+-caracteres
 Save → no arranque seguinte a conta de admin é criada (só se ainda não existir
 nenhuma). Entra em `/login`, confirma, e **remove a variável `BOOTSTRAP_ADMIN`**.
 
+Para **dados de teste** (um anfitrião `demo@example.com` / `demo1234` com 2
+alojamentos e códigos de hóspede, útil para testar o WhatsApp antes de ter
+SMTP): adiciona `SEED_DEMO = 1`. Corre uma vez, é não-destrutivo. Remove depois.
+
 ## 5. Mensagens proativas
 
 No plano gratuito, o scheduler corre **dentro do serviço web** (`RUN_SCHEDULER=1`

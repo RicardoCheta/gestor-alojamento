@@ -12,21 +12,18 @@ Seeded logins:
 Any real admin accounts created with create_admin.py are preserved across runs.
 """
 
-import json
 import sys
-from datetime import date, timedelta
-from pathlib import Path
 
 from werkzeug.security import generate_password_hash
 
 import db
+import seed_demo
 from manager import format_ticket, respond
 
 USE_LLM = "--llm" in sys.argv
-SEED_FILE = Path(__file__).parent / "data" / "properties.json"
 
-DEMO_EMAIL = "demo@example.com"
-DEMO_PASSWORD = "demo1234"
+DEMO_EMAIL = seed_demo.DEMO_EMAIL
+DEMO_PASSWORD = seed_demo.DEMO_PASSWORD
 DEMO_ADMIN_EMAIL = "admin@example.com"
 DEMO_ADMIN_PASSWORD = "admin1234"
 
@@ -67,46 +64,8 @@ def seed() -> dict:
         db.create_host(DEMO_ADMIN_EMAIL, generate_password_hash(DEMO_ADMIN_PASSWORD),
                        "Demo Admin", role="admin", email_verified=True)
 
-    host_id = db.create_host(DEMO_EMAIL, generate_password_hash(DEMO_PASSWORD),
-                             "Demo Host", email_verified=True)
-    db.set_host_plan(host_id, "intermedio")   # 2 alojamentos de exemplo cabem no plano
-
-    raw = json.loads(SEED_FILE.read_text(encoding="utf-8"))
-    by_unit = {}
-    for unit, p in raw.items():
-        wifi = p.get("wifi", {})
-        fields = {
-            "name": p.get("name", ""),
-            "address": p.get("address", ""),
-            "wifi_network": wifi.get("network", ""),
-            "wifi_password": wifi.get("password", ""),
-            "wifi_notes": wifi.get("notes", ""),
-            "ac_instructions": p.get("ac_instructions", ""),
-            "parking": p.get("parking", ""),
-            "checkin": p.get("checkin", ""),
-            "checkout": p.get("checkout", ""),
-            "trash": p.get("trash", ""),
-            "house_rules": p.get("house_rules", ""),
-            "emergency_contact": p.get("emergency_contact", ""),
-        }
-        pid = db.create_property(host_id, unit, fields)
-        by_unit[unit] = db.get_property(pid)
-
-    # Alguns prestadores para enviar os pedidos.
-    db.create_worker(host_id, "João (faz-tudo)", "+351910000001",
-                     ["general", "appliance", "electrical"])
-    db.create_worker(host_id, "Marta (canalizadora)", "+351910000002", ["plumbing"])
-    db.create_worker(host_id, "LimpaJá", "+351910000003", ["cleaning"])
-
-    # Reservas para as mensagens proativas: uma com check-in hoje, outra com
-    # check-out amanhã (o scheduler dispara nos dois casos).
-    today = date.today()
-    db.create_reservation(by_unit["14B"]["id"], "Beatriz", "+351920000001",
-                          today.isoformat(), (today + timedelta(days=3)).isoformat())
-    db.create_reservation(by_unit["3A"]["id"], "Carlos", "+351920000002",
-                          (today - timedelta(days=2)).isoformat(),
-                          (today + timedelta(days=1)).isoformat())
-    return by_unit
+    host_id = seed_demo.seed_demo_data()
+    return {p["unit"]: p for p in db.list_properties(host_id)}
 
 
 def main() -> None:

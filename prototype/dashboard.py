@@ -75,6 +75,12 @@ def _bootstrap_admin() -> None:
 
 _bootstrap_admin()
 
+try:
+    import seed_demo
+    seed_demo.maybe_seed_demo()
+except Exception as _exc:  # noqa: BLE001
+    print(f"[seed_demo] {_exc}", flush=True)
+
 _scheduler_started = False
 
 

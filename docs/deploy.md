@@ -12,8 +12,9 @@ parte corre as mensagens proativas.
 
 ## 2. Deploy com o blueprint
 
-O ficheiro [`prototype/render.yaml`](../prototype/render.yaml) descreve tudo:
-base de dados Postgres + serviço web + cron.
+O ficheiro [`render.yaml`](../render.yaml) (na raiz do repositório) descreve tudo:
+base de dados Postgres + serviço web + cron. A app em si vive em `prototype/`
+(`rootDir` no blueprint).
 
 1. No Render: **New → Blueprint**, aponta para o repositório.
 2. O Render cria a base de dados, o serviço web e o cron.

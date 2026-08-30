@@ -1,19 +1,20 @@
-# Render blueprint — deploys the web service, a Postgres database, and a cron
-# job for the proactive messages. Adjust `plan:` values to taste.
+# Render blueprint — serviço web + base de dados Postgres + cron das mensagens
+# proativas. Este ficheiro TEM de estar na raiz do repositório.
 #
-# After first deploy, set the secrets in the Render dashboard (see docs/deploy.md):
-#   FLASK_SECRET_KEY, APP_BASE_URL, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,
-#   TWILIO_WHATSAPP_FROM, and optionally ANTHROPIC_API_KEY + USE_LLM.
+# Depois do primeiro deploy, define os segredos no painel do Render
+# (ver docs/deploy.md): APP_BASE_URL, SMTP_*, TWILIO_*, e (opcional) STRIPE_*.
 
 databases:
   - name: gestor-alojamento-db
     plan: free
+    region: frankfurt
 
 services:
   - type: web
     name: gestor-alojamento
     runtime: python
     rootDir: prototype
+    region: frankfurt
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn wsgi:app --workers 2 --timeout 60 --bind 0.0.0.0:$PORT
@@ -28,7 +29,7 @@ services:
       - key: FLASK_SECRET_KEY
         generateValue: true
       - key: APP_BASE_URL
-        sync: false        # set to https://<your-service>.onrender.com
+        sync: false        # https://<nome-do-servico>.onrender.com
       - key: TWILIO_ACCOUNT_SID
         sync: false
       - key: TWILIO_AUTH_TOKEN
@@ -60,6 +61,7 @@ services:
     name: gestor-alojamento-scheduler
     runtime: python
     rootDir: prototype
+    region: frankfurt
     plan: free
     schedule: "*/15 * * * *"
     buildCommand: pip install -r requirements.txt

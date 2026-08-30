@@ -45,6 +45,7 @@ Subscrição mensal, sem plano gratuito:
 ```
 ai-airbnb-property-manager/
 ├── README.md
+├── render.yaml             # blueprint do Render (tem de estar na raiz)
 ├── prototype/
 │   ├── db.py               # armazenamento — SQLite (local) ou Postgres (prod), via DATABASE_URL
 │   ├── auth.py             # registo/login, hash de palavras-passe, verificação de email, recuperação, perfis
@@ -60,7 +61,7 @@ ai-airbnb-property-manager/
 │   ├── wsgi.py             # entrypoint de produção (gunicorn): painel em / e webhook em /hooks
 │   ├── create_admin.py     # CLI para criar uma conta de administrador da plataforma
 │   ├── demo.py             # repõe a BD, cria contas demo, corre exemplos
-│   ├── requirements.txt · Procfile · render.yaml · .env.example
+│   ├── requirements.txt · Procfile · .env.example
 │   └── data/
 │       ├── properties.json  # dados de exemplo que o demo.py insere na BD
 │       └── app.db           # base de dados SQLite local (criada no 1.º arranque, no .gitignore)

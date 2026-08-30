@@ -1,0 +1,22 @@
+# Secrets & local config
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Local database & data
+prototype/data/app.db
+prototype/data/*.sqlite
+prototype/pgdata/
+
+# OS / editors
+.DS_Store
+*.swp
+.idea/
+.vscode/

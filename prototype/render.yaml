@@ -1,0 +1,77 @@
+# Render blueprint — deploys the web service, a Postgres database, and a cron
+# job for the proactive messages. Adjust `plan:` values to taste.
+#
+# After first deploy, set the secrets in the Render dashboard (see docs/deploy.md):
+#   FLASK_SECRET_KEY, APP_BASE_URL, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,
+#   TWILIO_WHATSAPP_FROM, and optionally ANTHROPIC_API_KEY + USE_LLM.
+
+databases:
+  - name: gestor-alojamento-db
+    plan: free
+
+services:
+  - type: web
+    name: gestor-alojamento
+    runtime: python
+    rootDir: prototype
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app --workers 2 --timeout 60 --bind 0.0.0.0:$PORT
+    healthCheckPath: /login
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gestor-alojamento-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: APP_BASE_URL
+        sync: false        # set to https://<your-service>.onrender.com
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false        # ex.: "Gestor de Alojamento <ola@teudominio.pt>"
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_INICIAL
+        sync: false
+      - key: STRIPE_PRICE_INTERMEDIO
+        sync: false
+      - key: STRIPE_PRICE_PRO
+        sync: false
+
+  - type: cron
+    name: gestor-alojamento-scheduler
+    runtime: python
+    rootDir: prototype
+    plan: free
+    schedule: "*/15 * * * *"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scheduler.py
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gestor-alojamento-db
+          property: connectionString
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false

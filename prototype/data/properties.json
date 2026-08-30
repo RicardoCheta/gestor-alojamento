@@ -1,0 +1,34 @@
+{
+  "14B": {
+    "name": "Loft Solarengo — Baixa",
+    "address": "Rua da Prata 120, 4.º, Lisboa",
+    "wifi": {
+      "network": "LoftSolarengo_5G",
+      "password": "lisboa2024",
+      "notes": "O router está no armário do corredor, caso precise de o reiniciar."
+    },
+    "ac_instructions": "Use o comando branco na parede da sala. Carregue no botão de ligar, ponha o modo no floco de neve (arrefecimento) e a temperatura a 22°C. Demora cerca de 10 minutos a arrefecer a sala.",
+    "parking": "O parque público 'Parque Prata' fica a 80 m, na mesma rua, ~18€/dia. O apartamento não tem estacionamento privativo. O estacionamento na rua é pago das 8:00 às 20:00 (EMEL, zona azul).",
+    "checkin": "A partir das 15:00. Check-in autónomo com o cofre ao lado da porta principal, código 4417.",
+    "checkout": "Até às 11:00. Pode ser possível check-out tardio até às 13:00 se não houver chegada no mesmo dia — basta pedir e confirmamos na véspera à noite.",
+    "trash": "Os caixotes ficam no rés-do-chão, junto às caixas de correio. Os contentores de reciclagem estão na esquina da Rua da Prata com a Rua de São Julião.",
+    "house_rules": "Sem festas. Período de silêncio das 22:00 às 08:00. Proibido fumar no interior.",
+    "emergency_contact": "+351 912 000 111"
+  },
+  "3A": {
+    "name": "Estúdio com Jardim — Alfama",
+    "address": "Beco do Carneiro 8, Lisboa",
+    "wifi": {
+      "network": "EstudioJardim",
+      "password": "alfama-jardim-7",
+      "notes": "O sinal é fraco no pátio; é mais forte perto da cozinha."
+    },
+    "ac_instructions": "Não há ar condicionado. Há uma ventoinha de chão no armário do quarto, e a janela do quarto tem um estore blackout que mantém o quarto fresco durante o dia.",
+    "parking": "Alfama é só pedonal. O estacionamento mais próximo é o 'Parque Chão do Loureiro' (~7 min a pé), cerca de 16€/dia.",
+    "checkin": "A partir das 16:00. Recebemos os hóspedes pessoalmente — envie mensagem quando chegar.",
+    "checkout": "Até às 10:00.",
+    "trash": "Leve os sacos ao ponto de recolha no Largo de São Miguel, a partir das 20:00.",
+    "house_rules": "Sem festas. É um prédio residencial calmo — mantenha o ruído baixo depois das 21:00. Proibido fumar.",
+    "emergency_contact": "+351 912 000 111"
+  }
+}

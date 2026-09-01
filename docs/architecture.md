@@ -88,8 +88,10 @@ Classifier has two backends: offline keyword matching, or Claude
   5-try / 60-second brute-force brake, email verification and password reset.
   `mailer.py` sends those emails over SMTP (any provider — Brevo / Resend /
   Postmark / SES / Mailgun); with no SMTP configured the links go to the
-  console. `webhook.py` verifies the Twilio request signature. A guest links their
-  WhatsApp chat to a property with a 6-char per-property code.
+  console. `whatsapp.py` abstracts the WhatsApp channel (Twilio TwiML *or* Meta
+  Cloud API — GET verification + Graph API send), signature-verified either way;
+  `webhook.py` is provider-agnostic. A guest links their WhatsApp chat to a
+  property with a 6-char per-property code.
 - **Roles**: `host` and `admin`. Admins use a separate console (`/admin`) to
   manage client accounts — suspend/reactivate, set plan (property-count limit),
   toggle per-account features (`feat_ai`, `feat_whatsapp`, `feat_auto_tickets`)

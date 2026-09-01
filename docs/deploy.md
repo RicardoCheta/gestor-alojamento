@@ -34,16 +34,19 @@ base de dados Postgres + serviço web + cron. A app em si vive em `prototype/`
 O esquema é criado/migrado no arranque (`db.init_db()` corre com um *advisory
 lock* para vários processos poderem arrancar em paralelo sem conflito).
 
-## 3. Ligar o Twilio
+## 3. Ligar o WhatsApp
 
-No sandbox (ou no número aprovado), define **"When a message comes in"**:
+Endpoint (nos dois casos): `https://<nome-do-servico>.onrender.com/hooks/whatsapp`
 
-```
-https://<nome-do-servico>.onrender.com/hooks/whatsapp
-```
+- **Meta Cloud API** (grátis) — segue [whatsapp-meta.md](whatsapp-meta.md).
+  Variáveis: `WHATSAPP_PROVIDER=meta` + `META_*`.
+- **Twilio** — na configuração do sandbox/número, "When a message comes in" =
+  o endpoint acima, método **POST**. Variáveis: `WHATSAPP_PROVIDER=twilio` +
+  `TWILIO_*`. O sandbox do Twilio passou a exigir cartão para configurar o
+  webhook.
 
-método **POST**. Com `TWILIO_AUTH_TOKEN` definido, o webhook rejeita (403)
-qualquer pedido que não venha assinado pelo Twilio.
+Sem nenhum configurado, o assistente responde na mesma no painel (fila de
+revisão) mas não envia WhatsApp.
 
 ## 4. Criar a tua conta de admin
 

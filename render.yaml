@@ -37,11 +37,22 @@ services:
         value: "1"
       - key: APP_BASE_URL
         sync: false        # https://<nome-do-servico>.onrender.com
+      # Canal WhatsApp — preenche o fornecedor que escolheres (Twilio OU Meta)
+      - key: WHATSAPP_PROVIDER
+        sync: false        # "twilio" ou "meta"
       - key: TWILIO_ACCOUNT_SID
         sync: false
       - key: TWILIO_AUTH_TOKEN
         sync: false
       - key: TWILIO_WHATSAPP_FROM
+        sync: false
+      - key: META_ACCESS_TOKEN
+        sync: false
+      - key: META_PHONE_NUMBER_ID
+        sync: false
+      - key: META_VERIFY_TOKEN
+        sync: false
+      - key: META_APP_SECRET
         sync: false
       - key: SMTP_HOST
         sync: false

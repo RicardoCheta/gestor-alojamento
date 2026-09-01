@@ -57,7 +57,8 @@ ai-airbnb-property-manager/
 │   ├── notifications.py    # WhatsApp de saída (Twilio REST, ou simulado para a consola)
 │   ├── listing_import.py   # colar um anúncio Airbnb → campos estruturados do alojamento
 │   ├── dashboard.py        # app web: painel do anfitrião + consola de admin
-│   ├── webhook.py          # servidor Flask: WhatsApp real via Twilio
+│   ├── webhook.py          # servidor Flask que recebe mensagens do hóspede
+│   ├── whatsapp.py         # canal WhatsApp — Twilio ou Meta Cloud API (ou simulado)
 │   ├── wsgi.py             # entrypoint de produção (gunicorn): painel em / e webhook em /hooks
 │   ├── create_admin.py     # CLI para criar uma conta de administrador da plataforma
 │   ├── demo.py             # repõe a BD, cria contas demo, corre exemplos
@@ -68,6 +69,7 @@ ai-airbnb-property-manager/
 └── docs/
     ├── architecture.md
     ├── deploy.md            # deploy no Render (Postgres + web + cron)
+    ├── whatsapp-meta.md     # ligar o WhatsApp via Meta Cloud API (grátis)
     ├── pilot.md             # runbook do piloto (operador)
     └── manual-anfitriao.md  # guia para o anfitrião piloto
 ```
@@ -267,72 +269,38 @@ então a `X-Twilio-Signature` de cada pedido e devolve **403** a tudo o que não
 venha mesmo da Twilio. Sem isso, o webhook regista um aviso e aceita pedidos não
 assinados (só aceitável nos primeiros testes locais).
 
-## Ligar o WhatsApp real (sandbox da Twilio)
+## Ligar o WhatsApp real
 
-O [`prototype/webhook.py`](prototype/webhook.py) é um servidor Flask que recebe
-mensagens de WhatsApp da Twilio e responde usando o mesmo `manager.respond()` do
-demo. Usa a API **oficial** WhatsApp Business através da Twilio (fornecedor
-aprovado pela Meta) e o número partilhado do sandbox da Twilio — não se usa
-nenhum número pessoal, nada pode ser banido, e é grátis com o crédito de teste da
-Twilio.
+O [`prototype/whatsapp.py`](prototype/whatsapp.py) abstrai o canal e suporta
+**dois fornecedores** — sem nenhum configurado, o envio é simulado para a
+consola (o `demo.py` corre assim).
 
-### Configuração inicial (uma vez)
+| | Twilio | **Meta Cloud API** |
+|---|---|---|
+| Custo | ~0,005 €/msg (precisa de cartão) | grátis até 1000 conversas/mês |
+| Setup | conta Twilio + sandbox | conta Facebook + app Meta (~15 min) |
+| Variáveis | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_WHATSAPP_FROM` | ver [docs/whatsapp-meta.md](docs/whatsapp-meta.md) |
 
-1. **Crie uma conta Twilio gratuita** — https://www.twilio.com/try-twilio
-   (sem cartão de crédito para o teste). Verifique o seu número de telefone quando pedido.
+O webhook (`/hooks/whatsapp` em produção, `/whatsapp` local) trata dos dois
+formatos: TwiML síncrono para o Twilio, verificação por GET + envio pela Graph
+API para a Meta. Assinaturas validadas em ambos.
 
-2. **Abra o sandbox de WhatsApp**: Consola Twilio →
-   *Messaging → Try it out → Send a WhatsApp message*. Verá um número de sandbox
-   (ex.: `+1 415 523 8886`) e um código de adesão (ex.: `join olive-tiger`).
+Depois de configurado: o hóspede envia uma mensagem, o assistente pede o
+**código do hóspede** do alojamento (na página Alojamentos, ex.: `8f7bc6`), e a
+partir daí responde às perguntas. A ligação número → alojamento fica na tabela
+`guest_sessions`.
 
-3. **Adira a partir do seu telemóvel**: abra o WhatsApp, envie o código de adesão
-   exato para esse número. Recebe uma confirmação. (Quem quiser testar tem de o
-   fazer uma vez — é uma limitação do sandbox, desaparece com um número próprio.)
-
-### Sempre que o correr
-
-4. **Instale e arranque o servidor** (a partir de `prototype/`):
-   ```bash
-   python3 -m venv .venv
-   .venv/bin/pip install -r requirements.txt
-   .venv/bin/python webhook.py            # http://localhost:5050
-   ```
-
-5. **Exponha-o com o ngrok** (instale de https://ngrok.com/download, grátis):
-   ```bash
-   ngrok http 5050
-   ```
-   Copie o URL `https://xxxx.ngrok-free.app` que aparece.
-
-6. **Aponte a Twilio para ele**: nas definições do sandbox, defina
-   *"When a message comes in"* para `https://xxxx.ngrok-free.app/whatsapp`
-   (método **POST**) e Guarde.
-
-7. **Envie mensagem para o número do sandbox a partir do telemóvel.** Primeiro
-   pede o **código do hóspede** do alojamento — obtenha-o na página Alojamentos do
-   painel (ex.: `8f7bc6`) e envie-o. Depois pergunte o que quiser: *"onde está o
-   wifi"*, *"como ligo o ar condicionado"*, *"o chuveiro está a verter"* (este
-   último gera um pedido que aparece no painel).
-
-A ligação número de telefone → alojamento fica guardada na base de dados (tabela
-`guest_sessions`). Defina `USE_LLM=1` (e `ANTHROPIC_API_KEY`) para respostas
-geradas pela Claude em vez do classificador por palavras-chave.
-
-### Notas / limites
-
-- Os URLs gratuitos do ngrok mudam a cada reinício → repita o passo 6 em cada sessão.
-  Um deploy gratuito (Render / Railway) dá um URL fixo.
-- O sandbox só consegue enviar mensagens para números que fizeram a adesão, e
-  respostas livres só funcionam nas 24h após a última mensagem do hóspede. Ambas
-  as restrições desaparecem com um número de WhatsApp próprio aprovado (processo
-  de verificação Meta Business — barato, demora alguns dias).
+**Limite comum**: respostas livres só nas 24 h após a última mensagem do
+hóspede — as respostas do assistente e dos prestadores estão sempre dentro
+disso; as mensagens proativas de check-in (fora da janela) precisam mais tarde
+de um template aprovado.
 
 ## Estado
 
 Protótipo / prova de conceito. Interface e mensagens em português de Portugal.
 
 - ✅ Q&A com hóspedes + criação de pedidos (`manager.py`)
-- ✅ WhatsApp real de entrada/saída via sandbox da Twilio, com verificação de assinatura (`webhook.py`)
+- ✅ WhatsApp de entrada/saída — Twilio **ou** Meta Cloud API, com verificação de assinatura (`whatsapp.py` / `webhook.py`)
 - ✅ Painel do anfitrião — registo/login, mensagens, fila de pedidos, CRUD de alojamentos (`dashboard.py`)
 - ✅ Base de dados SQLite multi-tenant, todas as queries isoladas por anfitrião (`db.py`)
 - ✅ Hash de palavras-passe, cookie de sessão, trava anti-força-bruta (`auth.py`)

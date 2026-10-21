@@ -1,5 +1,5 @@
 """
-Host dashboard for the AI Airbnb Property Manager.
+Host dashboard for the Gestor de Alojamento.
 
 Hosts sign up through the platform, then manage their own properties, tickets
 and guest conversations. All data is scoped to the logged-in host.
@@ -526,7 +526,7 @@ def overview():
                        f"<div class='n'>{n}</div><div class='l'>A rever</div></a>")
     cards = f"""<div class="cards">
       <div class="card"><div class="n">{len(msgs_today)}</div><div class="l">Mensagens hoje</div></div>
-      <div class="card"><div class="n">{auto_rate}%</div><div class="l">Respondidas por IA</div></div>
+      <div class="card"><div class="n">{auto_rate}%</div><div class="l">Respondidas automaticamente</div></div>
       <div class="card"><div class="n">{len(open_tickets)}</div><div class="l">Pedidos em aberto</div></div>
       {review_card}
       <div class="card"><div class="n">{len(props)}</div><div class="l">Alojamentos</div></div>
@@ -719,9 +719,8 @@ def import_property():
     fields, source = listing_import.extract_fields(request.form.get("listing_text", ""))
     filled = [k for k, v in fields.items() if v]
     note = (f"<div class='ok'>Preenchi {len(filled)} campo(s) "
-            f"{'com IA' if source == 'ai' else 'a partir de padrões no texto'}"
-            f"{' — defina ANTHROPIC_API_KEY para melhores resultados' if source != 'ai' else ''}. "
-            f"Verifique tudo, adicione a etiqueta da unidade e Guarde.</div>")
+            f"{'automaticamente' if source == 'ai' else 'a partir de padrões no texto'}"
+                        f"Verifique tudo, adicione a etiqueta da unidade e Guarde.</div>")
     return page("Rever alojamento importado",
                 _property_form(url_for("new_property"), fields, "Adicionar alojamento", note))
 
@@ -1041,7 +1040,7 @@ def inbox():
 
 
 # --------------------------------------------------------------------------- #
-# Fila de revisão (feat_review) — a IA redige, o anfitrião aprova
+# Fila de revisão (feat_review) — o assistente redige, o anfitrião aprova
 # --------------------------------------------------------------------------- #
 
 @app.route("/review")
@@ -1060,7 +1059,7 @@ def review():
     blocks = ""
     for r in items:
         prop = "" if r["proposed_kind"] != "ticket" else (
-            f"<p class='muted'>A IA propõe abrir um <b>pedido de manutenção</b> — "
+            f"<p class='muted'>O assistente propõe abrir um <b>pedido de manutenção</b> — "
             f"{e(db.CATEGORY_LABELS.get(r['category'], r['category']))}, prioridade "
             f"{e(db.PRIORITY_LABELS.get(r['priority'], r['priority']))}.</p>")
         ticket_check = "" if r["proposed_kind"] != "ticket" else (
@@ -1385,7 +1384,7 @@ def admin_host(host_id: int):
       <div class="card"><div class="n">{len(open_tickets)}</div><div class="l">Pedidos em aberto</div></div>
       <div class="card"><div class="n">{an['messages']}</div><div class="l">Mensagens (total)</div></div>
       <div class="card"><div class="n">{an['messages_7d']}</div><div class="l">Mensagens (7 dias)</div></div>
-      <div class="card"><div class="n">{an['auto_rate']}%</div><div class="l">Respondidas por IA</div></div>
+      <div class="card"><div class="n">{an['auto_rate']}%</div><div class="l">Respondidas automaticamente</div></div>
       <div class="card"><div class="n">{an['reservations']}</div><div class="l">Reservas</div></div>
     </div>
 

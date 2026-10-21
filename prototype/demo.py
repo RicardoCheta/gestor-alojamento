@@ -71,7 +71,7 @@ def seed() -> dict:
 def main() -> None:
     props = seed()
 
-    print(f"Gestor de Alojamento — demo  (modo {'IA' if USE_LLM else 'offline'})")
+    print(f"Gestor de Alojamento — demo  (modo {'avançado' if USE_LLM else 'offline'})")
     print(f"Anfitrião:  {DEMO_EMAIL}  /  {DEMO_PASSWORD}")
     print(f"Admin:      {DEMO_ADMIN_EMAIL}  /  {DEMO_ADMIN_PASSWORD}")
     print("=" * 64)

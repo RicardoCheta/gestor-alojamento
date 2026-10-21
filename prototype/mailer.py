@@ -131,8 +131,8 @@ def send_welcome(to: str, name: str, url: str) -> bool:
     subject = f"Bem-vindo ao {APP_NAME}"
     text = (f"Olá {name or ''},\n\nFoi criada uma conta para si no {APP_NAME}. "
             f"Defina a sua palavra-passe para começar:\n{url}\n\n"
-            f"Depois de entrar, adicione os seus alojamentos e a informação que a "
-            f"IA vai usar para responder aos hóspedes.\n\n— {APP_NAME}")
+            f"Depois de entrar, adicione os seus alojamentos e a informação que o "
+            f"assistente vai usar para responder aos hóspedes.\n\n— {APP_NAME}")
     html = _wrap_html(
         f"Bem-vindo ao {APP_NAME}",
         "<p>Foi criada uma conta para si. Defina a palavra-passe para começar — "

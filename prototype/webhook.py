@@ -131,7 +131,7 @@ def _notify_host_review(host, unit: str, guest: str) -> None:
         base = os.environ.get("APP_BASE_URL", "http://localhost:5051").rstrip("/")
         mailer.send_host_notification(
             host["email"], "resposta para rever",
-            f"O hóspede {guest} ({unit}) enviou uma mensagem. A IA já preparou uma "
+            f"O hóspede {guest} ({unit}) enviou uma mensagem. O assistente já preparou uma "
             f"resposta — reveja e aprove no painel.",
             "Rever agora", f"{base}/review")
     except Exception as exc:  # noqa: BLE001

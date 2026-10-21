@@ -1,5 +1,5 @@
 """
-Storage layer for the AI Airbnb Property Manager.
+Storage layer for the Gestor de Alojamento.
 
 Runs on **SQLite** locally (zero setup) and on **Postgres** in production —
 picked from the `DATABASE_URL` environment variable:
@@ -77,7 +77,7 @@ PROPERTY_FIELDS = [
 
 # Per-account feature flags an admin can toggle. name -> (label PT, default_on)
 FEATURES = {
-    "feat_ai": ("Respostas automáticas por IA", 1),
+    "feat_ai": ("Respostas automáticas", 1),
     "feat_whatsapp": ("Canal WhatsApp", 1),
     "feat_auto_tickets": ("Criação automática de pedidos de manutenção", 1),
     "feat_dispatch": ("Envio automático de pedidos a prestadores", 1),

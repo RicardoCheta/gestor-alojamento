@@ -719,8 +719,8 @@ def import_property():
     fields, source = listing_import.extract_fields(request.form.get("listing_text", ""))
     filled = [k for k, v in fields.items() if v]
     note = (f"<div class='ok'>Preenchi {len(filled)} campo(s) "
-            f"{'automaticamente' if source == 'ai' else 'a partir de padrões no texto'}"
-                        f"Verifique tudo, adicione a etiqueta da unidade e Guarde.</div>")
+            f"{'automaticamente' if source == 'ai' else 'a partir de padrões no texto'}. "
+            f"Verifique tudo, adicione a etiqueta da unidade e Guarde.</div>")
     return page("Rever alojamento importado",
                 _property_form(url_for("new_property"), fields, "Adicionar alojamento", note))
 

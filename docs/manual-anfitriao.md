@@ -45,10 +45,10 @@ lembrete de check-out na véspera.
 Quando um hóspede escreve:
 1. Ele recebe *"o anfitrião responde-lhe dentro de momentos"*.
 2. Você recebe um **email**. No painel, aba **A rever**, vê a mensagem e a
-   resposta que a IA preparou.
+   resposta que o assistente preparou.
 3. **Edite** se quiser, depois **Aprovar e enviar** — ou **Descartar** e trate
    você mesmo.
-4. Se a IA propôs um **pedido de manutenção**, pode deixar criá-lo (e avisar o
+4. Se o assistente propôs um **pedido de manutenção**, pode deixar criá-lo (e avisar o
    prestador) ou desmarcar a caixa.
 
 Tente responder dentro do tempo que combinámos (ex.: 30 minutos em horário de dia).
@@ -62,7 +62,7 @@ ou **"concluído"** para atualizar o estado.
 
 ## Perguntas frequentes
 
-**A IA vai inventar coisas?** Só responde com a informação que você colocou. Se
+**O assistente vai inventar coisas?** Só responde com a informação que você colocou. Se
 não souber, encaminha para si.
 
 **E se eu não aprovar a tempo?** O hóspede fica à espera. Combine consigo mesmo um

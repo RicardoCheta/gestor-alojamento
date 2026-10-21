@@ -1,6 +1,6 @@
-# 🏡 Gestor de Alojamento com IA
+# 🏡 Gestor de Alojamento
 
-Um assistente de IA que responde automaticamente às mensagens dos hóspedes com a
+Um assistente que responde automaticamente às mensagens dos hóspedes com a
 informação de cada alojamento e transforma problemas reais em pedidos de
 manutenção. Interface e mensagens em **português de Portugal**.
 
@@ -9,7 +9,7 @@ manutenção. Interface e mensagens em **português de Portugal**.
 **Responde automaticamente às perguntas comuns dos hóspedes** com os dados do
 alojamento:
 
-| O hóspede pergunta | A IA responde a partir de |
+| O hóspede pergunta | O assistente responde a partir de |
 | --- | --- |
 | "Onde está o WiFi?" | dados de `wifi` da unidade |
 | "Como ligo o ar condicionado?" | `ac_instructions` |
@@ -43,7 +43,7 @@ Subscrição mensal, sem plano gratuito:
 ## Estrutura do repositório
 
 ```
-ai-airbnb-property-manager/
+gestor-alojamento/
 ├── README.md
 ├── render.yaml             # blueprint do Render (tem de estar na raiz)
 ├── prototype/
@@ -96,13 +96,9 @@ As contas de admin reais criadas com `create_admin.py` são mantidas entre execu
 > caminho de produção, define `DATABASE_URL=postgresql://...` — o mesmo código
 > corre em Postgres. Deploy: [docs/deploy.md](docs/deploy.md).
 
-Classificador por palavras-chave (offline) por omissão. Para respostas geradas pela Claude:
-
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-.venv/bin/pip install anthropic
-.venv/bin/python demo.py --llm
-```
+Por omissão as mensagens são classificadas por um classificador de palavras-chave
+(PT + EN) que corre totalmente offline. As restantes opções de configuração estão
+em `prototype/.env.example`.
 
 ## Painel do anfitrião
 
@@ -120,19 +116,18 @@ próprios alojamentos, pedidos e conversas (garantido em todas as queries de
 
 Páginas:
 
-- **Resumo** — mensagens hoje, % respondidas por IA, pedidos em aberto, atividade recente.
+- **Resumo** — mensagens hoje, % respondidas automaticamente, pedidos em aberto, atividade recente.
 - **Pedidos** — a fila de manutenção, primeiro os abertos e depois por prioridade;
   mudar o estado ou o prestador atribuído em linha. Cada pedido é classificado
   automaticamente numa categoria (canalização / eletricidade / eletrodomésticos /
   limpeza / geral).
-- **Alojamentos** — adicionar/editar/eliminar alojamentos e a informação que a IA
-  usa para responder (WiFi, ar condicionado, estacionamento, check-in/out, lixo,
+- **Alojamentos** — adicionar/editar/eliminar alojamentos e a informação que o
+  assistente usa para responder (WiFi, ar condicionado, estacionamento, check-in/out, lixo,
   regras). Cada alojamento tem um **código do hóspede** de 6 caracteres. Em
   *Adicionar alojamento* pode colar o texto do seu anúncio Airbnb e
-  **✨ pré-preencher os campos** — via Claude quando `ANTHROPIC_API_KEY` está
-  definido, senão um fallback simples com expressões regulares
+  **✨ pré-preencher os campos** a partir de padrões no texto
   (`listing_import.py`). Reveja sempre antes de guardar.
-- **A rever** *(só quando a funcionalidade está ligada)* — a IA redige a resposta
+- **A rever** *(só quando a funcionalidade está ligada)* — o assistente redige a resposta
   mas não a envia; o anfitrião edita se quiser e clica **Aprovar e enviar** (ou
   **Descartar**). Entretanto o hóspede recebe "o anfitrião responde-lhe dentro de
   momentos". Ao aprovar, o pedido de manutenção é criado, o prestador é avisado
@@ -143,7 +138,7 @@ Páginas:
 - **Prestadores** — os seus prestadores de limpeza / manutenção, cada um com um
   número de WhatsApp e as especialidades que cobre. Ver *Envio de pedidos* abaixo.
 - **Mensagens** — todas as conversas dos hóspedes, agrupadas por unidade + hóspede,
-  mostrando o que a IA respondeu e que mensagens geraram um pedido.
+  mostrando o que o assistente respondeu e que mensagens geraram um pedido.
 - **Faturação** — plano atual, preço, alojamentos usados, e pedir mudança de plano
   (stub — sem pagamento real; ver abaixo).
 
@@ -152,11 +147,11 @@ Páginas:
 Com a funcionalidade **"Rever respostas antes de enviar"** ligada (um admin
 ativa-a por conta — está desligada por omissão):
 
-1. O hóspede envia uma mensagem. A IA classifica e **redige** a resposta (e o
+1. O hóspede envia uma mensagem. O assistente classifica e **redige** a resposta (e o
    eventual pedido de manutenção) mas **não age**.
 2. O hóspede recebe de imediato *"o anfitrião responde-lhe dentro de momentos"*.
-3. Na aba **A rever** o anfitrião vê a mensagem, o rascunho (editável) e o que a
-   IA propõe. Clica **Aprovar e enviar** ou **Descartar**.
+3. Na aba **A rever** o anfitrião vê a mensagem, o rascunho (editável) e o que o
+   assistente propõe. Clica **Aprovar e enviar** ou **Descartar**.
 4. Ao aprovar: o pedido é criado (se aplicável, com opção de não criar), o
    prestador é avisado, e a resposta editada é enviada ao hóspede por WhatsApp.
 
@@ -252,13 +247,13 @@ anfitrião. A partir daí:
     anfitrião adiciona um alojamento. Se o
     anfitrião pediu um plano na página *Faturação*, aparece aqui um botão
     **Aplicar pedido** e um aviso em *Clientes*.
-  - **Funcionalidades** — *Respostas automáticas por IA*, *Canal WhatsApp*,
+  - **Funcionalidades** — *Respostas automáticas*, *Canal WhatsApp*,
     *Criação automática de pedidos*, *Envio automático a prestadores*,
     *Mensagens proativas*, *Rever respostas antes de enviar*. O `webhook.py` e o
-    `scheduler.py` respeitam-nas em tempo real: por exemplo, com a IA desligada,
+    `scheduler.py` respeitam-nas em tempo real: por exemplo, com as respostas automáticas desligadas,
     todas as mensagens dos hóspedes são apenas reencaminhadas para o anfitrião.
 - **Analytics do cliente** — no detalhe de cada cliente: mensagens (total / 7
-  dias), taxa de resposta por IA, reservas, e pedidos por categoria.
+  dias), taxa de resposta automática, reservas, e pedidos por categoria.
 
 O admin demo semeado é `admin@example.com` / `admin1234`.
 
@@ -308,10 +303,10 @@ Protótipo / prova de conceito. Interface e mensagens em português de Portugal.
 - ✅ Consola de admin — criar/gerir clientes (suspender, plano, funcionalidades), feed de atividade, emails de boas-vindas
 - ✅ Notificação ao anfitrião por email quando há uma resposta para rever
 - ✅ Envio de pedidos — atribuição automática a um prestador por especialidade, WhatsApp, atualizações de estado pelas respostas (`dispatch.py`)
-- ✅ Fila de revisão — a IA redige, o anfitrião aprova/edita antes de enviar ao hóspede (`manager._plan` / `apply_review`)
-- ✅ Importar anúncio — colar texto do Airbnb, pré-preencher campos do alojamento com a Claude (`listing_import.py`)
+- ✅ Fila de revisão — o assistente redige, o anfitrião aprova/edita antes de enviar ao hóspede (`manager._plan` / `apply_review`)
+- ✅ Importar anúncio — colar texto do Airbnb, pré-preencher campos do alojamento automaticamente (`listing_import.py`)
 - ✅ Mensagens proativas — reservas + modelos por alojamento, envio no check-in e véspera de check-out (`scheduler.py`)
-- ✅ Analytics por cliente na consola de admin (mensagens, taxa de IA, pedidos por categoria)
+- ✅ Analytics por cliente na consola de admin (mensagens, taxa de resposta automática, pedidos por categoria)
 - ✅ Faturação com **Stripe** — checkout, portal do cliente, webhooks que sincronizam o plano (`billing.py`); sem chaves Stripe, cai no fluxo "pedir plano → admin aplica"
 - ✅ Pronto para deploy — Postgres via `DATABASE_URL`, `gunicorn wsgi:app`, blueprint do Render (`render.yaml`, `docs/deploy.md`)
 - 🚀 **Pronto para piloto** — runbook do operador em [docs/pilot.md](docs/pilot.md), guia do anfitrião em [docs/manual-anfitriao.md](docs/manual-anfitriao.md)

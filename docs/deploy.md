@@ -24,7 +24,6 @@ base de dados Postgres + serviço web + cron. A app em si vive em `prototype/`
    - **Email**: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`
      (cria uma conta grátis em Brevo / Resend / Postmark e usa as credenciais
      SMTP; verifica o teu domínio de envio no painel do fornecedor para SPF/DKIM)
-   - (opcional) `ANTHROPIC_API_KEY` e `USE_LLM=1`
    - `FLASK_SECRET_KEY` é gerado automaticamente.
 
    Testa o email a partir da shell do serviço:

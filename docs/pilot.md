@@ -57,7 +57,7 @@ O anfitrião tem uma versão desta lista em
 ## Fim das 2–3 semanas — decisão
 
 Com o anfitrião, revê:
-- Quantas mensagens? Que % a IA acertou (aprovadas sem edição)?
+- Quantas mensagens? Que % o assistente acertou (aprovadas sem edição)?
 - Quanto tempo poupou por semana?
 - Pagaria o plano X?
 

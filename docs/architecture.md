@@ -12,8 +12,8 @@ guest message ─▶ manager.handle_message(unit, text)
                      └─ problem ─▶ create ticket (tickets.json) ─▶ reassure guest
 ```
 
-Classifier has two backends: offline keyword matching, or Claude
-(`claude-sonnet-5`) for classification + natural-language replies.
+The classifier uses offline keyword matching (PT + EN); an optional external
+classification backend can be enabled through configuration.
 
 ## Production shape
 
@@ -27,18 +27,18 @@ Classifier has two backends: offline keyword matching, or Claude
 
 ### 2. Knowledge base per property
 - **Done**: SQLite `properties` table, structured fields, dashboard editor, and
-  `listing_import.py` — paste Airbnb text, Claude fills the fields (regex
-  fallback offline).
-- **Next**: a free-text "house manual" field, embedded for retrieval so the LLM
+  `listing_import.py` — paste Airbnb text and the fields are pre-filled
+  automatically.
+- **Next**: a free-text "house manual" field, indexed for retrieval so the assistant
   can answer long-tail questions; move SQLite → Postgres.
 
-### 3. AI reply engine
+### 3. Reply engine
 - **Prototype now**: keyword classifier (PT + EN, whole-word matching with
-  plural tolerance) or Claude (`USE_LLM=1`) — both reply in pt-PT. Every message
+  plural tolerance), optionally an external backend (`USE_LLM=1`) — replies in pt-PT. Every message
   logged. `manager._plan()` is side-effect-free; `respond()` acts on it, or —
   when `feat_review` is on — parks the draft in a **review queue** so the host
   approves/edits before anything reaches the guest (`apply_review()`).
-- Claude with the property context in the system prompt + retrieved manual chunks.
+- Property context + retrieved manual chunks feed the reply.
 - **Next guardrails**: never share door codes before the check-in date; escalate
   refunds / cancellations / injuries / legal to a human; a confidence score that
   auto-holds low-confidence replies even when review is otherwise off.
@@ -109,5 +109,5 @@ Classifier has two backends: offline keyword matching, or Claude
 - **Airbnb ToS / messaging access** — depends on going through an approved PMS.
 - **Wrong automated answers** — mitigate with confidence gating + human review
   queue in the first weeks of each property.
-- **Liability** on safety issues — always escalate, never let the AI close
+- **Liability** on safety issues — always escalate, never let the assistant close
   those autonomously.
